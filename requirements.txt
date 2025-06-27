@@ -1,7 +1,6 @@
+xgboost==1.7.6
+scikit-learn==1.6.1
+pandas==2.2.2
+joblib==1.5.1
 streamlit
-scikit-learn
-pandas
 numpy
-joblib
-import xgboost
-from xgboost import XGBClassifier
