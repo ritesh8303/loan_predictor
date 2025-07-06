@@ -11,36 +11,54 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Load Model and Assets ---
-# Load the pre-trained model pipeline
-try:
-    model = joblib.load('loan_default_model.pkl')
-except FileNotFoundError:
-    st.error("Model file not found. Please run the training script first to generate 'loan_default_model.pkl'.")
-    st.stop()
+# --- Caching and Asset Loading ---
+# Use st.cache_resource to load the model and assets only once.
 
-# Load the feature columns
-try:
-    with open('columns.json', 'r') as f:
-        model_columns = json.load(f)
-except FileNotFoundError:
-    st.error("Columns file not found. Please run the training script first to generate 'columns.json'.")
-    st.stop()
+@st.cache_resource
+def load_model_and_assets():
+    """
+    Loads the model and other assets from disk, handling potential errors.
+    """
+    try:
+        model = joblib.load('loan_default_model.pkl')
+    except FileNotFoundError:
+        st.error("Model file ('loan_default_model.pkl') not found. Please ensure it's in your GitHub repository.")
+        st.stop()
+    except Exception as e:
+        st.error(
+            "An error occurred while loading the model. This is often due to a mismatch "
+            "in library versions (like scikit-learn) between the environment where the model was "
+            "saved (e.g., Google Colab) and this one (Streamlit Cloud).\n\n"
+            "Please check your 'requirements.txt' file and ensure the library versions match "
+            "the ones used for training."
+        )
+        st.error(f"Original error: {e}")
+        st.stop()
 
-# Load the grade values for the dropdown
-try:
-    with open('grade_values.json', 'r') as f:
-        grade_values = json.load(f)
-except FileNotFoundError:
-    st.error("Grade values file not found. Please run the training script first to generate 'grade_values.json'.")
-    st.stop()
+    try:
+        with open('columns.json', 'r') as f:
+            model_columns = json.load(f)
+    except FileNotFoundError:
+        st.error("Columns file ('columns.json') not found. Please ensure it's in the repository.")
+        st.stop()
+
+    try:
+        with open('grade_values.json', 'r') as f:
+            grade_values = json.load(f)
+    except FileNotFoundError:
+        st.error("Grade values file ('grade_values.json') not found. Please ensure it's in the repository.")
+        st.stop()
+
+    return model, model_columns, grade_values
+
+model, model_columns, grade_values = load_model_and_assets()
 
 
 # --- Application UI ---
 st.title("Loan Default Prediction App")
 st.markdown("""
 This app predicts the likelihood of a loan defaulting based on a few key features.
-Please enter the applicant's details below.
+Please enter the applicant's details in the sidebar.
 """)
 
 # --- Sidebar with Input Fields ---
@@ -50,7 +68,7 @@ def user_input_features():
     """Creates sidebar input fields and returns a DataFrame."""
     loan_amnt = st.sidebar.number_input('Loan Amount ($)', min_value=500, max_value=40000, value=10000, step=500)
     int_rate = st.sidebar.slider('Interest Rate (%)', min_value=5.0, max_value=31.0, value=12.0, step=0.1)
-    grade = st.sidebar.selectbox('Loan Grade', options=grade_values, index=grade_values.index('B'))
+    grade = st.sidebar.selectbox('Loan Grade', options=grade_values, index=grade_values.index('B') if 'B' in grade_values else 0)
     annual_inc = st.sidebar.number_input('Annual Income ($)', min_value=10000, max_value=10000000, value=75000, step=1000)
     dti = st.sidebar.slider('Debt-to-Income Ratio (DTI)', min_value=0.0, max_value=50.0, value=15.0, step=0.1)
 
