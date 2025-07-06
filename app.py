@@ -1,54 +1,42 @@
-# app.py
-
 import streamlit as st
-import pandas as pd
+import pickle
 import numpy as np
-import joblib
+import pandas as pd
 
-# Step 1: Load model and column names safely
-@st.cache_resource
-def load_artifacts():
-    try:
-        pipeline = joblib.load('loan_pipeline.pkl')
-        training_columns = joblib.load('training_columns.pkl')
-        return pipeline, training_columns
-    except Exception as e:
-        st.error(f"❌ Failed to load model or columns: {e}")
-        return None, None
+# Load the trained model (upload loan_default_model.pkl to repo)
+with open('loan_default_model.pkl', 'rb') as f:
+    model = pickle.load(f)
 
-pipeline, training_columns = load_artifacts()
+st.title("Loan Default Prediction")
 
-st.title("💰 Loan Default Prediction App")
+st.write("""
+Enter the loan details below to predict if the loan is likely to default.
+""")
 
-if pipeline is None:
-    st.stop()
+# Input fields for the 9 features
+out_prncp_inv = st.number_input("Outstanding Principal Inv", min_value=0.0, format="%.2f")
+out_prncp = st.number_input("Outstanding Principal", min_value=0.0, format="%.2f")
+last_pymnt_amnt = st.number_input("Last Payment Amount", min_value=0.0, format="%.2f")
+total_rec_prncp = st.number_input("Total Principal Received", min_value=0.0, format="%.2f")
+recoveries = st.number_input("Recoveries", min_value=0.0, format="%.2f")
+collection_recovery_fee = st.number_input("Collection Recovery Fee", min_value=0.0, format="%.2f")
+last_fico_range_low = st.number_input("Last FICO Range Low", min_value=300, max_value=850, step=1)
+last_fico_range_high = st.number_input("Last FICO Range High", min_value=300, max_value=850, step=1)
+total_pymnt = st.number_input("Total Payment Received", min_value=0.0, format="%.2f")
 
-# Step 2: Create user input fields dynamically
-def user_input_form():
-    st.sidebar.header("📋 Enter Applicant Information")
+# Prepare input data for prediction
+input_data = np.array([[
+    out_prncp_inv, out_prncp, last_pymnt_amnt, total_rec_prncp,
+    recoveries, collection_recovery_fee, last_fico_range_low,
+    last_fico_range_high, total_pymnt
+]])
 
-    user_data = {}
-    for col in training_columns:
-        if col.startswith("int_") or col.startswith("num_") or "amount" in col.lower():
-            user_data[col] = st.sidebar.number_input(f"{col}", min_value=0.0, step=100.0)
-        elif col.endswith("_year") or "term" in col.lower():
-            user_data[col] = st.sidebar.number_input(f"{col}", min_value=0, step=1)
-        else:
-            user_data[col] = st.sidebar.text_input(f"{col}")
+# Button for prediction
+if st.button("Predict Default Risk"):
+    prediction = model.predict(input_data)[0]
+    proba = model.predict_proba(input_data)[0][1]
 
-    return pd.DataFrame([user_data])
-
-# Step 3: Get input and make prediction
-input_df = user_input_form()
-
-if st.button("🔍 Predict Loan Status"):
-    try:
-        prediction = pipeline.predict(input_df)[0]
-        proba = pipeline.predict_proba(input_df)[0][1]
-
-        if prediction == 1:
-            st.success(f"✅ Prediction: Fully Paid with {proba*100:.2f}% confidence.")
-        else:
-            st.error(f"⚠️ Prediction: Charged Off with {(1-proba)*100:.2f}% confidence.")
-    except Exception as e:
-        st.error(f"❌ Prediction failed: {e}")
+    if prediction == 1:
+        st.error(f"⚠️ Loan is likely to DEFAULT with probability {proba:.2f}")
+    else:
+        st.success(f"✅ Loan is likely to be REPAID with probability {1 - proba:.2f}")
