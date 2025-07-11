@@ -1,8 +1,0 @@
-streamlit
-joblib
-xgboost
-numpy
-pandas==2.2.2
-streamlit
-scikit-learn==1.2.2  # Replace with your actual version
-joblib
