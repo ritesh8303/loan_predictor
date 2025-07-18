@@ -1,69 +1,115 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Loan Default DSS Portfolio", layout="wide")
+st.set_page_config(page_title="Loan DSS Portfolio", layout="wide")
+
+# Custom CSS for better visuals
+st.markdown("""
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: #0f172a;
+            padding-top: 20px;
+        }
+        .sub-title {
+            font-size: 20px;
+            text-align: center;
+            color: #475569;
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 28px;
+            color: #1e293b;
+            border-bottom: 2px solid #0ea5e9;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .highlight {
+            background-color: #ecfeff;
+            padding: 10px;
+            border-left: 5px solid #0ea5e9;
+            margin-bottom: 20px;
+        }
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #64748b;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Header
-st.title("📊 Loan Default Decision Support System")
-st.subheader("Built Using the DIKW & MCDA Frameworks")
-
-# Overview
 st.markdown("""
-### 🧠 Project Overview
-This project aims to help financial institutions reduce loan default risk by transforming raw historical loan data into actionable decisions using the **DIKW (Data-Information-Knowledge-Wisdom)** framework and **MCDA (Multi-Criteria Decision Analysis)**.
+<div class="main-title">📊 Loan Default Decision Support System</div>
+<div class="sub-title">Built Using the DIKW & MCDA Frameworks | Lending Club Dataset (2M+ records)</div>
+""", unsafe_allow_html=True)
 
-We used Lending Club data (2007–2018) with over 2 million records to simulate a real-world loan approval process.
-""")
+# Project Overview
+st.markdown("<div class='section-title'>🧠 Project Overview</div>", unsafe_allow_html=True)
+st.markdown("""
+<div class='highlight'>
+This decision support system (DSS) helps financial institutions reduce default risk by transforming raw loan data into actionable insights using the **DIKW (Data → Information → Knowledge → Wisdom)** framework, and evaluates borrowers using **MCDA (Multi-Criteria Decision Analysis)**.
+</div>
+""", unsafe_allow_html=True)
 
 # Motivation
+st.markdown("<div class='section-title'>💡 Motivation</div>", unsafe_allow_html=True)
 st.markdown("""
-### 💡 Motivation
-Our inspiration came from our own financial journey — applying for loans while moving to Germany. We realized how crucial transparent and data-driven lending decisions are, especially for international students and immigrants.
-""")
+<div class='highlight'>
+While moving to Germany, we experienced how difficult and important loan approvals are — especially for students and immigrants. That real-world challenge inspired us to build this model to support transparent, explainable credit decisions.
+</div>
+""", unsafe_allow_html=True)
 
 # Methodology
+st.markdown("<div class='section-title'>🛠️ Methodology</div>", unsafe_allow_html=True)
+
 st.markdown("""
-### 🧪 Methodology
+**🔹 DIKW Framework:**
+- **Data:** Cleaned and filtered the Lending Club dataset with 105+ fields
+- **Information:** Performed EDA on income, FICO, loan purpose, grade, interest rate, etc.
+- **Knowledge:** Identified patterns behind defaults (e.g., low FICO, high DTI)
+- **Wisdom:** Made actionable recommendations for lenders
 
-#### 🔹 DIKW Framework:
-- **Data:** Cleaned and preprocessed large Lending Club dataset
-- **Information:** Descriptive analysis on income, loan purpose, employment, FICO score, and more
-- **Knowledge:** Discovered correlations like higher default risk for small business loans
-- **Wisdom:** Provided actionable recommendations for lenders
-
-#### 🔹 MCDA:
-- Used weighted scoring on multiple features (FICO, DTI, employment length, etc.)
-- Created borrower risk levels: Approve / Review / Reject
+**🔹 MCDA Implementation:**
+- Weighted scoring of borrowers on FICO, income, DTI, employment
+- Risk-based ranking: **Approve**, **Review**, or **Reject**
 """)
 
 # Tools
+st.markdown("<div class='section-title'>🧰 Tools & Technologies</div>", unsafe_allow_html=True)
 st.markdown("""
-### 🛠️ Tools & Technologies
-- **Python** (Pandas, Seaborn, Matplotlib)
-- **DIKW & MCDA Frameworks**
-- *(Skipped Power BI due to dataset size)*
+- Python: Pandas, Seaborn, Matplotlib
+- DIKW & MCDA Frameworks
+- Streamlit for portfolio visualization *(Power BI skipped due to data size)*
 """)
 
-# Team Roles
+# Team Contributions
+st.markdown("<div class='section-title'>👥 Team Contributions</div>", unsafe_allow_html=True)
 st.markdown("""
-### 👥 Team Contributions
-| Team Member | Role |
-|-------------|------|
-| **Adon** | Data cleaning and preparation |
-| **Ritesh** | Descriptive analysis & Information layer |
-| **Aarushi** | Pattern recognition & Knowledge layer |
-| **Pratik** | Strategic recommendations (Wisdom layer) |
-| **Flossy** | MCDA model design and borrower scoring |
+| Team Member | Responsibility |
+|-------------|----------------|
+| **Adon**     | Data cleaning and preparation |
+| **Ritesh**   | Descriptive analysis & Information Layer |
+| **Aarushi**  | Pattern recognition & Knowledge Layer |
+| **Pratik**   | Strategic recommendations (Wisdom Layer) |
+| **Flossy**   | MCDA logic & risk ranking model |
 """)
 
-# Outcomes
+# Key Outcomes
+st.markdown("<div class='section-title'>📈 Key Outcomes</div>", unsafe_allow_html=True)
 st.markdown("""
-### ✅ Key Outcomes
-- Transparent, interpretable decision support system
-- Borrower risk-ranking using MCDA
-- Strategic recommendations for safer lending
-- Real-world simulation using 2M+ loan records
+- Designed an explainable, transparent loan decision model
+- Visualized loan behavior trends and defaults
+- Created borrower risk categories for practical decisions
+- Delivered a real-world simulation with >2 million records
 """)
 
 # Footer
-st.markdown("---")
-st.markdown("Project by Team DSS | July 2025")
+st.markdown("""
+<div class='footer'>Project by Team DSS | Final Submission July 2025</div>
+""", unsafe_allow_html=True)
